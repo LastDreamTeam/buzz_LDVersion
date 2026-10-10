@@ -20,6 +20,28 @@
 | LD-005 | 跟随上游的轻量检查 | `.github/workflows/ld-checks.yml` | `main_1` 相关推送/PR 检查词条锚点、展示边界和新增组件类型；不自动部署 |
 | LD-006 | 有归属的第三方词库补充与本土用词 | `desktop/ld/vendor/asterracy/`、`reference-catalog.mjs`、`catalog.mjs` | 固定来源版本，键/参数一致性及歧义排除测试；官方国际化合并后评估迁移 |
 | LD-007 | Windows 更新前的本机受保护备份及回退说明 | `ld/windows/`，不接入客户端运行时代码 | 仅 Buzz 路径与专属凭据；文件哈希对照、DPAPI 解密验证；不自动安装或恢复凭据 |
+| LD-008 | 工作流、项目、运行环境和智能体资料漏译补充 | 独立词库、已审查展示常量、`workflow-display.mjs`、`profile-labels.mjs` | 协议/YAML/用户内容不翻译；资料分类标识不修改，只在渲染时翻译；复杂动态工作流摘要暂保留英文 |
+| LD-009 | 自有仓库新版检查与手动下载 | 构建期将原生 `use-updater.ts` 映射到 `desktop/ld/use-fork-updater.ts` | 上游文件 SHA-256 漂移即构建失败；只查询本 Fork Releases，不回退官方、不自动安装未签名包 |
+| LD-010 | 补齐原生手机配对 sidecar | `ld/deploy/enable-pairing.py`，独立 Compose 服务及 Nginx `/pair` | 复用已部署官方镜像中的 `buzz-pair-relay`；无数据库/私钥/聊天持久化，不重启 Hermes 或主 Relay |
+
+### 提交元数据勘误
+
+早期部分提交（包括 `48077414`）中的“Codex + GPT-5”为手写模板误标，不是 Git 采集到的运行模型。核对本次维护会话对应的本机 `turn_context`，构建阶段与本轮记录均为 `gpt-6-astra`、`xhigh`。这里只更正提交说明，不声称能独立审计服务端路由，也不改写或强推已发布历史。后续使用核实后的会话型号填写 LD 提交头；遵循现有 DCO 与署名规范。
+
+### 本 Fork 发布与更新边界
+
+- 新版检查访问 `LastDreamTeam/buzz_LDVersion/releases/latest`，验证 LD 版本格式和安装包、`SOURCE_COMMIT`、`SHA256SUMS` 三项附件齐全。网络失败显示错误，不伪装为“已是最新版”。
+- 当前实现是 **检查更新 → 打开本 Fork 发布页 → 手动安装**，不是静默自动安装。原生 Tauri 自动安装另需独立更新签名密钥、公钥及签名清单；不能关闭验签凑成自动更新。Windows Authenticode 签名和 Tauri 更新签名也不是同一回事。
+- 中文版中选 English 仍使用本 Fork 更新通道；`LD_BUZZ_LOCALE=en` 只旁路本地化，不将更新源切回官方。
+- 发布包来自干净 CI 构建，只发布安装器、源码 SHA、校验和及说明；禁止上传本机 AppData、身份备份、生产配置、聊天截图或令牌。预览质量仍在说明中明确，不以“可下载”代替完整产品验收。
+
+### 手机二维码 404 的部署修复
+
+主 Relay 的 NIP-11 宣告 NIP-43、但未配置独立 pairing URL 时，原生客户端回退到 `/pair`。只部署主 Relay 而未部署 `buzz-pair-relay` 会返回 404；不是汉化或主账号损坏。
+
+`enable-pairing.py` 仅适用于带 LD 标记的已有 Compose 安装：校验目标、备份 Compose/Nginx、复用主服务的已落盘镜像 SHA、启动独立内网 sidecar，再验证并 reload Nginx。该服务无宿主机端口、不读取主服务 `.env`，48 MiB 内存上限；入口限连接/请求速率，官方 sidecar 自带签名校验、4 KiB 帧、120 秒连接寿命等边界。脚本不是重复执行的更新器，已启用时拒绝覆盖。
+
+失败时恢复配置并停止新增 sidecar；手动回滚先恢复备份的 Nginx 内容（保留 bind mount 的文件 inode），`nginx -t` 后 reload，再仅停止 pairing，恢复 Compose 备份。不要 `compose down`，更不要删除数据卷。
 
 ### LD-001：回复只剩圆点
 

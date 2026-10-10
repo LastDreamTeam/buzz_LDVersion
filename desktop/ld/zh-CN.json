@@ -1184,5 +1184,18 @@
   "Event ID": "事件 ID",
   "Choose an ACP command": "选择 ACP 启动命令",
   "Return huddle to drawer": "将语音会议收回侧栏",
-  "Huddle audio isn’t available on this server. Ask an administrator to turn it on.": "此服务器尚未开启语音会议，请联系管理员启用。"
+  "Huddle audio isn’t available on this server. Ask an administrator to turn it on.": "此服务器尚未开启语音会议，请联系管理员启用。",
+  "This LD build uses manual updates. Download the verified installer from our GitHub releases.": "此 LD 版本采用手动更新，请从我们仓库的发布页下载已校验安装包。",
+  "Back up Buzz data before installing. Automatic installation requires a signed LD update channel.": "安装前请备份 Buzz 数据。自动安装需要另行配置已签名的 LD 更新通道。",
+  "v{{0}} available — download the verified installer from LD GitHub releases.": "v{{0}} 已发布，请从 LD 仓库发布页下载已校验安装包。",
+  "Update available — download from LD GitHub releases": "发现新版，请从 LD 仓库发布页下载",
+  "Create Workflow": "创建工作流",
+  "Start": "启动",
+  "Start agent": "启动智能体",
+  "Add agent": "添加智能体",
+  "Default model": "默认模型",
+  "Nothing shared yet": "暂无共享内容",
+  "Shared agents and teams will appear here.": "共享的智能体和团队将显示在这里。",
+  "Shown publicly on the agent's card and profile.": "公开显示在智能体卡片和资料页中。",
+  "Describe what this agent should do.": "描述这个智能体应执行的工作。"
 }

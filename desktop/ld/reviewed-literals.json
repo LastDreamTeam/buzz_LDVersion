@@ -1,4 +1,104 @@
 {
+  "features/settings/ui/harnessCatalogLogic.ts": {
+    "Config error": "配置有误",
+    "Adapter needed": "需要安装适配器",
+    "Update needed": "需要更新",
+    "CLI needed": "需要安装命令行工具",
+    "Sign-in needed": "需要登录"
+  },
+  "features/agents/ui/AgentDescriptionField.tsx": {
+    "What this agent does, in a sentence": "用一句话介绍这个智能体的用途"
+  },
+  "features/agents/ui/agentConfigOptions.tsx": { "Default model": "默认模型" },
+  "features/profile/ui/UserProfilePanelUtils.ts": {
+    "Profile": "资料",
+    "Agent instructions": "智能体指令",
+    "Agent info": "智能体信息",
+    "Runtime": "运行环境",
+    "Harness log": "运行器日志",
+    "Memories": "记忆",
+    "Channels": "频道"
+  },
+  "features/profile/ui/UserProfilePanelSections.tsx": {
+    "Info": "信息",
+    "Runtime": "运行环境",
+    "Channels": "频道",
+    "Memories": "记忆"
+  },
+  "features/workflows/ui/WorkflowDialog.tsx": {
+    "Create workflow": "创建工作流",
+    "Edit workflow": "编辑工作流",
+    "Duplicate workflow": "复制工作流",
+    "Save changes": "保存更改",
+    "Create copy": "创建副本",
+    "Creating…": "正在创建…",
+    "Saving…": "正在保存…"
+  },
+  "features/workflows/ui/ChannelCombobox.tsx": {
+    "Channel": "频道",
+    "Choose a channel": "选择频道",
+    "The channel can't be changed after a workflow is created.": "工作流创建后不能更改所属频道。"
+  },
+  "features/workflows/ui/workflowFormTypes.ts": {
+    "Message Posted": "收到消息",
+    "Reaction Added": "收到表情回应",
+    "Diff Posted": "收到代码变更",
+    "Schedule": "定时触发",
+    "Delay": "等待",
+    "Send Message": "发送消息",
+    "Send DM": "发送私聊",
+    "Call Webhook": "调用 Webhook",
+    "Request Approval": "请求审批",
+    "Add Reaction": "添加表情回应",
+    "Set Channel Topic": "设置频道主题"
+  },
+  "features/projects/ui/projectsSectionMeta.ts": {
+    "Activity": "动态",
+    "Reviews": "代码评审",
+    "Tasks": "任务",
+    "Repositories": "代码仓库",
+    "Channels": "频道",
+    "Projects": "项目"
+  },
+  "features/projects/ui/projectsOverviewContext.ts": {
+    "Create project": "创建项目",
+    "Add repository": "添加代码仓库",
+    "Repositories": "代码仓库",
+    "Active tasks": "进行中任务",
+    "Open reviews": "待处理评审",
+    "Add channel": "添加频道",
+    "Channels": "频道",
+    "Projects": "项目",
+    "Create task": "创建任务",
+    "Tasks": "任务",
+    "Active": "进行中",
+    "Completed": "已完成",
+    "Create review": "创建代码评审",
+    "Reviews": "代码评审",
+    "Open": "待处理",
+    "Merged": "已合并",
+    "Activity": "动态"
+  },
+  "features/projects/ui/ProjectCards.tsx": {
+    "commit": "次提交",
+    "commits": "次提交",
+    "review": "项评审",
+    "reviews": "项评审",
+    "task": "项任务",
+    "tasks": "项任务"
+  },
+  "features/projects/ui/ProjectsOverviewItems.tsx": {
+    "Mine": "我的",
+    "Other repositories": "其他代码仓库"
+  },
+  "features/projects/ui/ProjectsToolbar.tsx": {
+    "Activity": "动态",
+    "Reviews": "代码评审",
+    "Tasks": "任务",
+    "Repositories": "代码仓库",
+    "Channels": "频道",
+    "Projects": "项目"
+  },
   "shared/lib/datetime.ts": {
     "en-US": "zh-CN",
     "Today": "今天",

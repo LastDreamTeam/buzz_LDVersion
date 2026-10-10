@@ -1,0 +1,12 @@
+{
+  "features/settings/UpdateChecker.tsx": {
+    "In-app updates aren't supported on this Linux package. Download\n                the new version from GitHub.": "This LD build uses manual updates. Download the verified installer from our GitHub releases.",
+    "Switch to the AppImage build for automatic updates.": "Back up Buzz data before installing. Automatic installation requires a signed LD update channel."
+  },
+  "features/settings/SidebarUpdateCard.tsx": {
+    "available — download from GitHub. Switch to AppImage for automatic updates.": "available — download the verified installer from LD GitHub releases."
+  },
+  "features/settings/UpdateIndicator.tsx": {
+    "Update available — download from GitHub (use AppImage for auto-updates)": "Update available — download from LD GitHub releases"
+  }
+}

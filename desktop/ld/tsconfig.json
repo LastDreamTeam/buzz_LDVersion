@@ -1,5 +1,5 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["./LanguageSetting.tsx", "../src/vite-env.d.ts"],
+  "include": ["./LanguageSetting.tsx", "./use-fork-updater.ts", "../src/vite-env.d.ts"],
   "references": []
 }

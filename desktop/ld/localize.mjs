@@ -1,5 +1,6 @@
 import ts from "typescript";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { catalog as defaultCatalog } from "./catalog.mjs";
@@ -9,6 +10,9 @@ const reviewedLabelFiles = JSON.parse(
 );
 const reviewedLiterals = JSON.parse(
   readFileSync(new URL("./reviewed-literals.json", import.meta.url), "utf8"),
+);
+const releaseCopy = JSON.parse(
+  readFileSync(new URL("./release-copy.json", import.meta.url), "utf8"),
 );
 const displayAttributes = new Set([
   "title",
@@ -22,6 +26,8 @@ const displayAttributes = new Set([
   "subheading",
   "emptyMessage",
   "buttonLabel",
+  "submitLabel",
+  "ariaLabel",
 ]);
 
 // OpenAI: only literal display positions; never translate arbitrary data or protocol values.
@@ -100,7 +106,7 @@ export function displayLiterals(source, filename) {
     ) {
       if (Object.hasOwn(fileOverrides, node.text)) {
         text = node.text;
-        context = "expression";
+        context = ts.isJsxAttribute(node.parent) ? "attribute" : "expression";
       } else if (
         ts.isJsxAttribute(node.parent) &&
         displayAttributes.has(node.parent.name.getText())
@@ -122,7 +128,14 @@ export function displayLiterals(source, filename) {
       }
     }
     if (text && /[A-Za-z]/.test(text)) {
-      const key = text.trim().replace(/\s+/g, " ");
+      const key = text
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(
+          /&(apos|quot|amp|lt|gt);/g,
+          (_, name) =>
+            ({ apos: "'", quot: '"', amp: "&", lt: "<", gt: ">" })[name],
+        );
       entries.push({
         key,
         text,
@@ -214,6 +227,99 @@ function importFrom(id, relativeFile) {
   return JSON.stringify(relative);
 }
 
+export function injectWorkflowDisplay(source, filename) {
+  if (
+    !filename
+      .replaceAll("\\", "/")
+      .endsWith("/src/features/workflows/ui/WorkflowRichTriggerDescription.tsx")
+  )
+    return source;
+  if (
+    source.split("{description}").length !== 2 ||
+    source.split("return description;").length !== 2
+  )
+    throw new Error("LD workflow render anchors changed; review upstream");
+  let code = source
+    .replace(
+      "{description}",
+      "{__ldWorkflowDisplay(description, __ldBuzzIsChinese)}",
+    )
+    .replace(
+      "return description;",
+      "return __ldWorkflowDisplay(description, __ldBuzzIsChinese);",
+    );
+  if (!code.includes("import { isChinese as __ldBuzzIsChinese }"))
+    code =
+      `import { isChinese as __ldBuzzIsChinese } from ${importFrom(filename, "./locale-runtime.mjs")};\n` +
+      code;
+  return (
+    `import { workflowDisplay as __ldWorkflowDisplay } from ${importFrom(filename, "./workflow-display.mjs")};\n` +
+    code
+  );
+}
+
+export function forkUpdaterOverlay(source, filename) {
+  if (
+    !filename
+      .replaceAll("\\", "/")
+      .endsWith("/src/features/settings/hooks/use-updater.ts")
+  )
+    return null;
+  const digest = createHash("sha256")
+    .update(source.replaceAll("\r\n", "\n"))
+    .digest("hex");
+  if (
+    digest !==
+    "363cf3aa3f9abbc85a729ffb19bb08e5f3aebd0308ee6f60200ea042f7738bcf"
+  )
+    throw new Error(
+      "LD updater contract changed upstream; review before rebuilding",
+    );
+  return {
+    code: `export { useUpdater } from ${importFrom(filename, "./use-fork-updater.ts")};\nexport type { UpdateStatus } from ${importFrom(filename, "./use-fork-updater.ts")};`,
+    map: null,
+  };
+}
+
+export function injectProfileLabel(source, filename) {
+  if (
+    !filename
+      .replaceAll("\\", "/")
+      .endsWith("/src/features/profile/ui/UserProfilePanelFields.tsx")
+  )
+    return source;
+  if ([...source.matchAll(/(?<!\$)\{field\.label\}/g)].length !== 1)
+    throw new Error(
+      "LD profile render anchor changed; review upstream grouping identifiers",
+    );
+  let code = source.replace(
+    /(?<!\$)\{field\.label\}/,
+    "{__ldProfileLabel(field.label, __ldBuzzIsChinese)}",
+  );
+  if (!code.includes("import { isChinese as __ldBuzzIsChinese }"))
+    code =
+      `import { isChinese as __ldBuzzIsChinese } from ${importFrom(filename, "./locale-runtime.mjs")};\n` +
+      code;
+  return (
+    `import { profileLabel as __ldProfileLabel } from ${importFrom(filename, "./profile-labels.mjs")};\n` +
+    code
+  );
+}
+
+export function forkReleaseCopy(source, filename) {
+  const patches = Object.entries(releaseCopy).find(([file]) =>
+    filename.replaceAll("\\", "/").endsWith(`/src/${file}`),
+  )?.[1];
+  if (!patches) return source;
+  let code = source.replaceAll("\r\n", "\n");
+  for (const [from, to] of Object.entries(patches)) {
+    if (code.split(from).length !== 2)
+      throw new Error(`LD release copy anchor changed: ${filename}`);
+    code = code.replace(from, to);
+  }
+  return code;
+}
+
 // OpenAI: inject one isolated setting at a verified JSX anchor; never rewrite upstream files.
 export function injectLanguageSetting(source, filename) {
   if (
@@ -271,6 +377,10 @@ export function ldLocalization({
     enforce: "pre",
     transform(source, id) {
       const normalized = id.replaceAll("\\", "/");
+      const updater = forkUpdaterOverlay(source, normalized);
+      if (updater) return updater;
+      const originalSource = source;
+      source = forkReleaseCopy(source, normalized);
       const reviewed = Object.keys(reviewedLiterals).some((file) =>
         normalized.endsWith(`/src/${file}`),
       );
@@ -280,7 +390,7 @@ export function ldLocalization({
         (!normalized.endsWith(".tsx") && !reviewed) ||
         /\.(test|spec)\./.test(normalized)
       )
-        return null;
+        return source === originalSource ? null : { code: source, map: null };
       if (
         source.includes("__ldBuzzIsChinese") ||
         source.includes("__LdLanguageSetting")
@@ -292,7 +402,9 @@ export function ldLocalization({
           `import { isChinese as __ldBuzzIsChinese } from ${importFrom(normalized, "./locale-runtime.mjs")};\n` +
           code;
       code = injectLanguageSetting(code, normalized);
-      return code === source ? null : { code, map: null };
+      code = injectWorkflowDisplay(code, normalized);
+      code = injectProfileLabel(code, normalized);
+      return code === originalSource ? null : { code, map: null };
     },
     transformIndexHtml(html) {
       return html.replace(/<html\s+lang="[^"]*"/, `<html lang="${locale}"`);
