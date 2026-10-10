@@ -2,10 +2,8 @@ import ts from "typescript";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { catalog as defaultCatalog } from "./catalog.mjs";
 
-const defaultCatalog = JSON.parse(
-  readFileSync(new URL("./zh-CN.json", import.meta.url), "utf8"),
-);
 const reviewedLabelFiles = JSON.parse(
   readFileSync(new URL("./reviewed-label-files.json", import.meta.url), "utf8"),
 );
@@ -72,7 +70,7 @@ export function displayLiterals(source, filename) {
     source,
     ts.ScriptTarget.Latest,
     true,
-    ts.ScriptKind.TSX,
+    filename.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
   );
   const fileOverrides =
     Object.entries(reviewedLiterals).find(([file]) =>

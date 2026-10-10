@@ -18,6 +18,7 @@
 | LD-003 | 手动构建、哈希与源码提交回执 | `.github/workflows/ld-*.yml` | 仅本 Fork 的 `main_1` 运行；不使用生产密钥 |
 | LD-004 | 设置 → 外观中的简体中文 / English 切换 | `desktop/ld/LanguageSetting.tsx`，构建时挂到已校验的原生外观设置节点 | 原生分段控件与确认弹窗；取消不变、双向切换、存储失败不重载测试 |
 | LD-005 | 跟随上游的轻量检查 | `.github/workflows/ld-checks.yml` | `main_1` 相关推送/PR 检查词条锚点、展示边界和新增组件类型；不自动部署 |
+| LD-006 | 有归属的第三方词库补充与本土用词 | `desktop/ld/vendor/asterracy/`、`reference-catalog.mjs`、`catalog.mjs` | 固定来源版本，键/参数一致性及歧义排除测试；官方国际化合并后评估迁移 |
 
 ### LD-001：回复只剩圆点
 
@@ -35,18 +36,22 @@ CLI 的 Linux 构建、单测、真实二进制回归和格式检查已通过：
 
 Desktop 已通过 TypeScript 检查、E2E 前端构建、本地化边界回归以及浏览器模拟 Tauri 的中文消息/频道/设置交互测试。发送 `Save Cancel Archive channel 原样保留` 后原文仍保持不变。模拟测试使用隔离浏览器目录，不接入生产身份。Windows 原生编译与安装验收单独记录，不能与这些测试混为一谈。未运行完整 `just ci`、Mobile 和其它平台测试。
 
-中英切换已另行通过 10 项本地化回归、独立设置组件类型检查和 4 项浏览器交互测试（其中包括取消、切换后保留设置页面、双向切换及存储失败不重载）。这些是模拟桌面桥接测试，不是拿用户私钥执行真实登录测试。
+中英切换最初通过 10 项本地化回归；纳入 LD-006 词库后已重新通过 17 项回归、原生前端及独立设置组件类型检查和 4 项浏览器交互测试（其中包括取消、切换后保留设置页面、双向切换及存储失败不重载）。这些是模拟桌面桥接测试，不是拿用户私钥执行真实登录测试。
+
+LD-006 的正式前端构建（`pnpm --dir desktop build`）与上游 protected-feature internal/OSS 产物矩阵也已通过；构建仍有上游大分块/动态导入提示，不把提示说成零警告。Windows 安装包状态以对应源码的 Actions 结果为准。
 
 ### 中文层如何维护
 
 - `desktop/ld/zh-CN.json`：固定界面文案词库，当前覆盖登录、身份备份、聊天、频道、个人资料、常用设置与部分智能体/项目界面；不是所有功能 100% 汉化。
+- `desktop/ld/vendor/asterracy/`：经许可复用的固定英文/简体中文目录，4082 个原始键。只补充当前源码精确匹配的展示文案，并非 4082 项都在本版生效。LD 人工词条优先，来源归属见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+- 本土用词见 [GLOSSARY.zh-CN.md](GLOSSARY.zh-CN.md)：话题回复、语音会议、共享文档、智能体运行器等按功能解释；Open 等歧义词逐位置处理，不全局猜测。
 - `localize.mjs`：TypeScript AST 仅识别 JSX 展示文字、明确展示属性、展示分支与模板。不是正则全局替换，不扫描聊天 DOM，不访问翻译网站。
 - `reviewed-literals.json`：少数经审查的文件级展示常量例外；动态姓名/频道名仍保留原值。`reviewed-label-files.json` 仅允许所列文件的 `label` 字段本地化。
 - 默认中文，用户可在 **设置 → 外观 → 界面语言** 切换 English / 简体中文。使用原生控件与确认弹窗；确认才保存并重新载入界面，取消不修改。请先发送或保存未完成内容，避免未保存编辑丢失。
 - 偏好只保存到设备本地 `localStorage["ld.buzz.uiLocale"]`，不改变社区/智能体语言、不读取密钥、不调用服务端。双语分支保留动态表达式的单次求值；重载后统一生效，避免模块级展示常量出现混合语言。
 - `LD_BUZZ_LOCALE=en` 构建仍可完全旁路 LD 本地化和语言设置，供故障回退；不需要删词库或重置用户数据。这与在双语版设置中选 English 不同。
 - `node desktop/ld/inventory.mjs` 输出未覆盖固定文案及覆盖统计。模板参数的数量和顺序必须保持一致，否则构建报错。未识别文案保持英文；不会以韩语为兜底。
-- `node --test desktop/ld/localize.test.mjs` 检查展示边界、未知文字回退、模板参数、运行时语言偏好、设置注入节点、全部 TSX 变换后语法以及已审查词条的上游锚点。
+- `node --test desktop/ld/localize.test.mjs desktop/ld/reference-catalog.test.mjs` 运行 17 项测试：展示边界、未知文字回退、模板参数、运行时语言偏好、设置注入节点、全部 TSX 变换后语法、已审查词条锚点，以及来源键/参数一致性、歧义排除、术语例外与 LD 优先级。
 - `pnpm --dir desktop exec tsc --noEmit -p ld/tsconfig.json` 单独检查新增设置组件。`LD overlay upgrade guard` 在 `main_1` 相关推送/PR 自动执行轻量回归；不是完整原生发行验收，也不替代分支保护。
 - `pnpm --dir desktop build:e2e` 后执行 `pnpm --dir desktop exec playwright test --config ld/playwright.config.ts`。该测试只模拟 Tauri；正式应用仍需真实验证。
 
@@ -70,7 +75,16 @@ Desktop 已通过 TypeScript 检查、E2E 前端构建、本地化边界回归�
 
 核查 [tianheil3/buzz](https://github.com/tianheil3/buzz) 当前 `main` 的固定提交 `37d9622c5ab490472d3b943a6917d92205bb83f5`。相对其已合并的官方基线 `82f7ed1532f50e0d28afca5580ed522f1c2ef1ca`，仅新增 `.github/workflows/fork-desktop-canary.yml`（227 行）；没有中文词库或 UI 汉化改动。结论限于此次核查的公开 main，不推断作者的未发布工作。
 
-[新增工作流提交](https://github.com/tianheil3/buzz/commit/badd51a8b983743f560919bfb4323d1a811d812d) 可供参考之处是按需构建、无签名/无自动更新的预览产物、按上游版本派生 Fork 版本，以及 Rust/pnpm 缓存。LD 已自行实现前三类中的手动构建和非自动更新边界；自动版本派生、macOS 与缓存优化可后续单独评估。本次没有合并该 Fork、没有运行其工作流，也没有将它误标为中文来源。当前 LD 中文词库和语言切换是本仓库独立实现。
+[新增工作流提交](https://github.com/tianheil3/buzz/commit/badd51a8b983743f560919bfb4323d1a811d812d) 可供参考之处是按需构建、无签名/无自动更新的预览产物、按上游版本派生 Fork 版本，以及 Rust/pnpm 缓存。LD 已自行实现前三类中的手动构建和非自动更新边界；自动版本派生、macOS 与缓存优化可后续单独评估。本次没有合并该 Fork、没有运行其工作流，也没有将它误标为中文来源。最初 LD 词库与语言切换独立实现；后来 LD-006 明确纳入 Asterracy 的词库数据，不将第三方翻译冒认为 LD 原创。
+
+### 中文参考的选择与用词调整
+
+- [Asterracy 的 i18n-zh-hans / PR #7777](https://github.com/block/buzz/pull/7777)：核查时 open、未合并；固定头 `3343dee36cb81ae87878cc4bf78a2c95d97237f1`。提供较完整的 4082 键词库、术语表和 i18n 实现，但涉及 628 个文件；本 Fork 只复用许可明确的词库数据，不整体合并源码。不能把作者报告的测试数量当成 LD 的实测结果。
+- [PR #5152](https://github.com/block/buzz/pull/5152)：核查时 open、未合并；固定头 `b4560ace4d99ba70dcfdcfed842415df65418d11`。侧重较小范围的原生国际化基础、语言偏好、系统语言跟随与回退机制。本次参考设计，不复制其实现；LD 暂只提供简体中文与 English，不声称已支持跟随系统或繁体。
+- `reference-catalog.mjs` 排除同一英文对应不同中文、参数重排/重复插值以及富文本标记；只做构建期确定性匹配，不运行外部 PR 的脚本，不联网翻译。原始目录保持原始键值，适配规则单独保存。
+- 本土化不是批量换词：Huddle → 语音会议、频道 Canvas → 共享文档；画图画布保持原义。Thread 在聊天中叫话题，CPU/worker 线程不改。频道权限 Open → 公开，仅在已审查的创建频道展示摘要生效。
+- 此轮扫描固定展示位置 4089 处，命中 3356 处；2850 个不同展示键中完整命中 2206 个。统计只针对 AST 可识别范围，包括部分品牌/技术名，不代表整个应用完成率。此次也纠正 `.ts` 泛型被错误按 JSX 统计的问题。
+- 官方最终合并哪套框架尚不确定；将来优先迁移到官方接口并移除重复外层，不能无限叠加多套语言系统。
 
 ## 数据保护与回滚
 

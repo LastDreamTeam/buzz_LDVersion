@@ -11,6 +11,7 @@ import {
   localizeSource,
 } from "./localize.mjs";
 import { LOCALE_KEY, readLocale, saveLocale } from "./locale-runtime.mjs";
+import { catalog } from "./catalog.mjs";
 
 test("only display literals change; commands, stored values and user expressions remain intact", () => {
   const input = `const message = "Save"; const wire = {role:"Private"};
@@ -202,9 +203,6 @@ test("reviewed upstream anchors still exist after merges and transformed .ts rem
 });
 
 test("catalog and every transformed TSX file parse, without changing source files", () => {
-  const catalog = JSON.parse(
-    readFileSync(new URL("./zh-CN.json", import.meta.url), "utf8"),
-  );
   for (const [key, value] of Object.entries(catalog)) {
     assert.equal(typeof value, "string", key);
     assert.ok(value.trim(), key);

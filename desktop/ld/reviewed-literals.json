@@ -57,6 +57,15 @@
   "features/messages/ui/MessageThreadPanel.tsx": {
     "Reply in thread to {{0}}": "在话题中回复 {{0}}"
   },
+  "features/sidebar/ui/CreateChannelFormFields.tsx": {
+    "Private": "私密",
+    "Open": "公开",
+    "Canvas included": "含共享文档",
+    "agent": "个智能体",
+    "agents": "个智能体",
+    "team": "个团队",
+    "teams": "个团队"
+  },
   "features/channels/ui/ChannelBrowserDialog.tsx": {
     "Add a forum": "添加论坛",
     "Browse channels": "浏览频道",

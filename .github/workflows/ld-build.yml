@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test desktop/ld/localize.test.mjs
+          node --test desktop/ld/localize.test.mjs desktop/ld/reference-catalog.test.mjs
           pnpm --dir desktop typecheck
           pnpm --dir desktop exec tsc --noEmit -p ld/tsconfig.json
           pnpm --dir desktop exec playwright install chromium --only-shell

@@ -2,11 +2,9 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { displayLiterals } from "./localize.mjs";
+import { catalog } from "./catalog.mjs";
 
 const root = fileURLToPath(new URL("../src/", import.meta.url));
-const catalog = JSON.parse(
-  readFileSync(new URL("./zh-CN.json", import.meta.url), "utf8"),
-);
 const found = new Map();
 let displaySites = 0;
 let translatedSites = 0;
