@@ -4,7 +4,7 @@ LD 版使用上游 Tauri NSIS 安装方式，保持 `xyz.block.buzz.app` 应用�
 
 ## 更新
 
-1. 从本 Fork `main_1` 的成功 `LD Chinese Desktop` 构建获取附件。核对 `SOURCE_COMMIT` 是需要的源码；按 `SHA256SUMS` 校验安装包。Actions 附件仅保留 7 天，请本地保存，或按固定源码重新构建。
+1. 从本 Fork [Releases](https://github.com/LastDreamTeam/buzz_LDVersion/releases) 获取已发布安装包，或从 `main_1` 的成功 `LD Chinese Desktop` 构建获取附件。核对 `SOURCE_COMMIT` 是需要的源码；按 `SHA256SUMS` 校验安装包。Actions 临时附件仅保留 7 天，Release 附件单独发布，不受这个临时附件保留期约束。
 2. 保存未发送内容，退出 Buzz。不要点“退出登录 / Sign out”：该原生功能会清理本地身份和状态，不是普通关闭窗口。
 3. 用 PowerShell 7 执行下面的备份脚本；目录必须是全新的，并位于来源目录之外。脚本不终止进程，发现 Buzz/本机智能体运行中会停止。
 
@@ -33,6 +33,8 @@ LD 版使用上游 Tauri NSIS 安装方式，保持 `xyz.block.buzz.app` 应用�
 
 ## 后续如何获得更新
 
-当前 LD 预览版没有自动更新源，也不自动切回官方版。后续先在 `main_1` 合并并验收上游更新、运行 LD 构建，再按同一流程覆盖更新。不要把“官方最新”按钮等同于“LD 中文最新版”。
+从 `0.5.29-ld.4` 开始，设置 → 更新只检查本 Fork 的最新公开 Release，校验 LD 版本格式及三项附件后提供发布页下载入口；网络失败会显示错误。它不会自动安装未签名程序，也不自动切回官方版。`ld.3` 及更早维护版尚无此检查功能，首次须手动更新。
+
+后续先在 `main_1` 合并并验收上游更新、运行 LD 构建、发布对应的安装包 / `SOURCE_COMMIT` / `SHA256SUMS` 三项附件，再按同一流程覆盖更新。草稿和标记为 GitHub prerelease 的发布不作为当前检查源；维护预览质量和未签名边界仍应在公开 Release 说明中明确。不要把“官方最新”按钮等同于“LD 中文最新版”。
 
 安装参数核查基于固定的 [Tauri CLI 2.11.4 NSIS 模板](https://github.com/tauri-apps/tauri/blob/tauri-cli-v2.11.4/crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi)。升级 Tauri 后须重新检查模板行为。
