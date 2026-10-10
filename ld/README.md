@@ -64,6 +64,17 @@ LD-006 的正式前端构建（`pnpm --dir desktop build`）与上游 protected-
 
 具体更新步骤、原生 `/UPDATE` 模式、备份脚本和回退边界见 [Windows 更新说明](windows/UPDATE.zh-CN.md)。脚本不在构建时执行，也不写入应用安装目录或用户钥匙串。
 
+### Windows 实机安装验收：2026-10-11
+
+[构建 38071460854](https://github.com/LastDreamTeam/buzz_LDVersion/actions/runs/38071460854) 已成功，安装包版本 `0.5.29-ld.3`，运行时代码来自 `4807741485edfe815b6aa269a86315bd179a226a`。后续备份脚本及本文档提交不改变该安装包的运行时代码。
+
+- 产物：`Buzz_0.5.29-ld.3_x64-setup.exe`；SHA-256：`f9ae98f7ca355e79d4613527b1b47aa45b86b711750ddec6ae94083fdff2a995`。下载时同时核对 Actions ZIP digest、`SOURCE_COMMIT` 和 `SHA256SUMS`。
+- 本机从 `0.5.28` 原位更新，原生 NSIS `/S /UPDATE` 返回 0，程序与安装记录均为 `0.5.29-ld.3`。保留既有桌面快捷方式。
+- 更新前受保护备份 563 个文件，逐文件 SHA-256 一致；Buzz 专属凭据使用 DPAPI CurrentUser 加密并验证。更新及语言切换后凭据摘要与备份前完全相同。没有退出账号、清空 AppData 或重新注册。
+- **真实 Windows 客户端**已检查：中文导航、个人资料及原头像；既有账号、频道与历史聊天可见；外观设置里的取消操作、中文 → English → 中文切换和双语确认弹窗正常。最终停留在简体中文。截图与含个人数据的验收回执只保存本机，不上传仓库。
+- 安装到本机的真实 `buzz.exe` 再次通过 `ld/tests/cli-edit-stdin.py`：中文、换行、签名、字面量和超限拒绝均通过。此测试仅使用 loopback fixture，不发送生产聊天。
+- 本次桌面安装没有重启 Hermes、Relay 或其它服务。该结果是上述范围的实机验收，不等于全产品、语音/视频或其它操作系统均已验证；剩余未匹配界面文案仍回退英文。
+
 ## 跟随官方升级
 
 1. 确认无未提交改动，备份运行配置、数据库与身份（秘密不进 Git）。
