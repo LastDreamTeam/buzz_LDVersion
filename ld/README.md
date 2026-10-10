@@ -16,6 +16,7 @@
 | LD-001 | `messages edit --content -` 读取 stdin，与 send 一致 | `crates/buzz-cli/src/commands/messages.rs`，`src/lib.rs` 帮助文本 | 真实 CLI 回归；官方修复后先通过测试再删重复补丁 |
 | LD-002 | 独立桌面中文词库与 AST 构建期覆盖 | `desktop/vite.config.ts` 两行接入；其余集中于 `desktop/ld/` | 本地化边界回归 + 中文消息/频道/设置端到端测试；未覆盖内容回退英文 |
 | LD-003 | 手动构建、哈希与源码提交回执 | `.github/workflows/ld-*.yml` | 仅本 Fork 的 `main_1` 运行；不使用生产密钥 |
+| LD-004 | 设置 → 外观中的简体中文 / English 切换 | `desktop/ld/LanguageSetting.tsx`，构建时挂到已校验的原生外观设置节点 | 原生分段控件与确认弹窗；取消不变、双向切换、存储失败不重载测试 |
 
 ### LD-001：回复只剩圆点
 
@@ -33,14 +34,19 @@ CLI 的 Linux 构建、单测、真实二进制回归和格式检查已通过：
 
 Desktop 已通过 TypeScript 检查、E2E 前端构建、本地化边界回归以及浏览器模拟 Tauri 的中文消息/频道/设置交互测试。发送 `Save Cancel Archive channel 原样保留` 后原文仍保持不变。模拟测试使用隔离浏览器目录，不接入生产身份。Windows 原生编译与安装验收单独记录，不能与这些测试混为一谈。未运行完整 `just ci`、Mobile 和其它平台测试。
 
+中英切换已另行通过 10 项本地化回归、独立设置组件类型检查和 4 项浏览器交互测试（其中包括取消、切换后保留设置页面、双向切换及存储失败不重载）。这些是模拟桌面桥接测试，不是拿用户私钥执行真实登录测试。
+
 ### 中文层如何维护
 
 - `desktop/ld/zh-CN.json`：固定界面文案词库，当前覆盖登录、身份备份、聊天、频道、个人资料、常用设置与部分智能体/项目界面；不是所有功能 100% 汉化。
 - `localize.mjs`：TypeScript AST 仅识别 JSX 展示文字、明确展示属性、展示分支与模板。不是正则全局替换，不扫描聊天 DOM，不访问翻译网站。
 - `reviewed-literals.json`：少数经审查的文件级展示常量例外；动态姓名/频道名仍保留原值。`reviewed-label-files.json` 仅允许所列文件的 `label` 字段本地化。
-- 使用 `LD_BUZZ_LOCALE=en` 构建可完全关闭中文覆盖；不需要删词库或重置用户数据。默认 `zh-CN`，当前不提供运行时语言切换。
+- 默认中文，用户可在 **设置 → 外观 → 界面语言** 切换 English / 简体中文。使用原生控件与确认弹窗；确认才保存并重新载入界面，取消不修改。请先发送或保存未完成内容，避免未保存编辑丢失。
+- 偏好只保存到设备本地 `localStorage["ld.buzz.uiLocale"]`，不改变社区/智能体语言、不读取密钥、不调用服务端。双语分支保留动态表达式的单次求值；重载后统一生效，避免模块级展示常量出现混合语言。
+- `LD_BUZZ_LOCALE=en` 构建仍可完全旁路 LD 本地化和语言设置，供故障回退；不需要删词库或重置用户数据。这与在双语版设置中选 English 不同。
 - `node desktop/ld/inventory.mjs` 输出未覆盖固定文案及覆盖统计。模板参数的数量和顺序必须保持一致，否则构建报错。未识别文案保持英文；不会以韩语为兜底。
-- `node --test desktop/ld/localize.test.mjs` 检查展示边界、未知文字回退、模板参数及全部 TSX 变换后语法。
+- `node --test desktop/ld/localize.test.mjs` 检查展示边界、未知文字回退、模板参数、运行时语言偏好、设置注入节点、全部 TSX 变换后语法以及已审查词条的上游锚点。
+- `pnpm --dir desktop exec tsc --noEmit -p ld/tsconfig.json` 单独检查新增设置组件。`LD overlay upgrade guard` 在 `main_1` 相关推送/PR 自动执行轻量回归；不是完整原生发行验收，也不替代分支保护。
 - `pnpm --dir desktop build:e2e` 后执行 `pnpm --dir desktop exec playwright test --config ld/playwright.config.ts`。该测试只模拟 Tauri；正式应用仍需真实验证。
 
 ### Windows 中文预览版
@@ -53,7 +59,7 @@ Desktop 已通过 TypeScript 检查、E2E 前端构建、本地化边界回归�
 
 1. 确认无未提交改动，备份运行配置、数据库与身份（秘密不进 Git）。
 2. `git fetch upstream`；从当前 `main_1` 建立升级分支，合并明确官方 SHA；不 reset、不强推覆盖维护分支。
-3. 逐项核对本账本接入点。官方已修复的问题，先跑回归再移除补丁。重新扫描词库覆盖，陌生文案保留英文，不模糊替换协议字段。
+3. 逐项核对本账本接入点，并按新上游基线调整 Windows 工作流的 LD 预览版本号。官方已修复的问题，先跑回归再移除补丁。重新扫描词库覆盖，陌生文案保留英文，不模糊替换协议字段。
 4. 运行受影响测试、桌面可视化验证和独立环境试装。Mock 测试不等于真实身份、媒体或网络验收。
 5. 人工验收后升级生产，记录源码 SHA、产物哈希、测试和回滚路径，保留旧程序。
 

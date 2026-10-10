@@ -12,7 +12,9 @@ export default defineConfig({
     baseURL: "http://127.0.0.1:4288",
     viewport: { width: 1440, height: 1000 },
     screenshot: "only-on-failure",
-    launchOptions: process.env.LD_TEST_BROWSER ? { executablePath: process.env.LD_TEST_BROWSER } : {},
+    launchOptions: process.env.LD_TEST_BROWSER
+      ? { executablePath: process.env.LD_TEST_BROWSER }
+      : {},
   },
   webServer: {
     command: "pnpm exec vite preview --host 127.0.0.1 --port 4288 --strictPort",

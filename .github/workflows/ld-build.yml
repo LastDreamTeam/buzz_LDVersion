@@ -34,6 +34,7 @@ jobs:
           set -euo pipefail
           node --test desktop/ld/localize.test.mjs
           pnpm --dir desktop typecheck
+          pnpm --dir desktop exec tsc --noEmit -p ld/tsconfig.json
           pnpm --dir desktop exec playwright install chromium --only-shell
           pnpm --dir desktop build:e2e
           pnpm --dir desktop exec playwright test --config ld/playwright.config.ts

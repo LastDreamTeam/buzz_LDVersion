@@ -1,4 +1,5 @@
 [
   "features/settings/ui/SettingsPanels.tsx",
+  "features/settings/ui/AppearanceSettingsControls.tsx",
   "features/settings/ui/SettingsView.tsx"
 ]
