@@ -1,0 +1,11 @@
+{
+  "node": "E:\\Tools\\node\\node.exe",
+  "harness": "E:\\Apps\\Buzz\\buzz-acp.exe",
+  "acpModule": "C:\\Users\\YOUR_USER\\AppData\\Roaming\\Buzz\\node-tools\\node_modules\\@agentclientprotocol\\codex-acp\\dist\\index.js",
+  "codexHome": "C:\\Users\\YOUR_USER\\.codex",
+  "agents": {
+    "astra": { "workspace": "E:\\Agentic\\Buzz-Codex\\workspaces\\astra", "model": "gpt-6-astra[xhigh]" },
+    "sol": { "workspace": "E:\\Agentic\\Buzz-Codex\\workspaces\\sol", "model": "gpt-6-sol[high]" },
+    "luna": { "workspace": "E:\\Agentic\\Buzz-Codex\\workspaces\\luna", "model": "gpt-6-luna[medium]" }
+  }
+}

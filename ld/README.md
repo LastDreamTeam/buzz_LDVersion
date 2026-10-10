@@ -24,6 +24,7 @@
 | LD-009 | 自有仓库新版检查与手动下载 | 构建期将原生 `use-updater.ts` 映射到 `desktop/ld/use-fork-updater.ts` | 上游文件 SHA-256 漂移即构建失败；只查询本 Fork Releases，不回退官方、不自动安装未签名包 |
 | LD-010 | 补齐原生手机配对 sidecar | `ld/deploy/enable-pairing.py`，独立 Compose 服务及 Nginx `/pair` | 复用已部署官方镜像中的 `buzz-pair-relay`；无数据库/私钥/聊天持久化，不重启 Hermes 或主 Relay |
 | LD-011 | 已有外部 Hermes 身份的原生主人归属与权限声明 | 原生 NIP-OA kind 0 / 主人签名 kind 30177；不改产品源码 | 本机主人签名、远端 Agent 签名，严格读回；不复制主人私钥，不伪造本机托管记录或远程控制权限 |
+| LD-012 | 本机 Codex 的 E 盘工作区及限定权限自动审批 | 独立 `ld/codex/` shim + 原生 Buzz ACP / Codex 沙箱 | [部署、边界、测试、升级及卸载](codex/README.zh-CN.md)；不用 full access，不修改产品核心 |
 
 ### 提交元数据勘误
 
@@ -56,7 +57,9 @@
 4. 仅将公开签名标签交给原有 Agent。Agent 使用服务器上原有私钥签署新的 kind 0，保留原来的资料正文与非 auth 标签。发布前再次核对旧事件 ID，防止覆盖期间的头像或资料修改。
 5. 从 Relay 重新读取并验证双方事件签名、标签和原文一致性。同步核对 Hermes 已生效的 `BUZZ_ALLOWED_USERS` 确为主人、`BUZZ_ALLOW_ALL_USERS=false`；声明本身不替代 Gateway 的实际入站权限检查。
 
-本次已完成上述操作，真实客户端资料卡显示 `Managed by lastdream (you)`；原生 CLI 的 `users get --owner <主人公钥> --name <精确名称>` 返回唯一匹配且 `verification: "verified"`。原身份、头像和正文未改，Gateway PID 未变，没有重启。操作回执及原事件只保存在受保护的本机/服务器备份，不上传身份、主机配置或聊天数据。
+女仆长的上述归属补充已完成，真实客户端资料卡显示 `Managed by lastdream (you)`；原生 CLI 的 `users get --owner <主人公钥> --name <精确名称>` 返回唯一匹配且 `verification: "verified"`。该次原身份、头像和正文未改，Gateway PID 未变，没有重启。操作回执及原事件只保存在受保护的本机/服务器备份，不上传身份、主机配置或聊天数据。
+
+2026-10-11 后续接入芙蓉、贞德：仍用已有 Hermes 原生 Buzz 插件，补齐独立 Bot 身份、主人归属和实际入站 allowlist，原生查询均为 verified。按另行授权，在空闲、备份、回滚与配置校验通过后，逐个重启承载它们的两个精确 Gateway 服务加载配置；没有改模型、记忆、Hermes 核心或隧道。两者均已在真实频道返回验收标记。上游模型同时出现额度告警，连接成功不能等同于模型额度健康，也没有为此擅自充值或替换模型。
 
 边界与后续维护：
 

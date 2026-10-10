@@ -30,5 +30,6 @@ jobs:
           version: 11.4.0
       - run: pnpm install --frozen-lockfile --filter buzz... --ignore-scripts
       - run: node --test desktop/ld/*.test.mjs
+      - run: node --test ld/codex/*.test.mjs
       - run: pnpm --dir desktop exec tsc --noEmit -p ld/tsconfig.json
       - run: node desktop/ld/inventory.mjs --summary
