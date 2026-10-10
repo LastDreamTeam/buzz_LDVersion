@@ -1,0 +1,70 @@
+{
+  "shared/lib/datetime.ts": {
+    "en-US": "zh-CN",
+    "Today": "今天",
+    "Yesterday": "昨天",
+    "{{0}} at {{1}}": "{{0}} {{1}}"
+  },
+  "features/messages/lib/systemEventCopy.ts": {
+    "were added by": "被邀请加入，邀请人：",
+    "added by": "被邀请加入，邀请人：",
+    "were added": "已被加入频道",
+    "was added": "已被加入频道",
+    "you": "你"
+  },
+  "features/messages/ui/SystemMessageRow.tsx": {
+    "Someone": "某位成员",
+    "joined": "加入了频道",
+    "arrived": "进入了频道",
+    "joined, then left the channel": "加入后又退出了频道",
+    "joined the channel": "加入了频道",
+    "left the channel": "退出了频道",
+    "created this channel": "创建了此频道",
+    "archived this channel": "归档了此频道",
+    "unarchived this channel": "恢复了此频道",
+    "Removed by community moderators": "已被社区管理员移除",
+    "removed a message": "移除了一条消息"
+  },
+  "features/messages/ui/MessageComposer.tsx": {
+    "Edit your message": "编辑消息",
+    "Reply to {{0}} in #{{1}}": "回复 {{0}}（频道 #{{1}}）",
+    "Message #{{0}}": "发送到 #{{0}}"
+  },
+  "features/settings/ui/ProfileSettingsCard.tsx": {
+    "Edit": "编辑",
+    "Done": "完成"
+  },
+  "features/channels/ui/ChannelPane.tsx": {
+    "Message #{{0}}": "发送到 #{{0}}"
+  },
+  "features/channels/ui/ChannelPane.helpers.ts": {
+    "project channel": "项目频道",
+    "private ephemeral channel": "私密临时频道",
+    "private channel": "私密频道",
+    "ephemeral channel": "临时频道",
+    "regular channel": "普通频道"
+  },
+  "features/channels/ui/useChannelIntro.tsx": {
+    "Create an agent": "创建智能体",
+    "private welcome channel": "私密欢迎频道",
+    "Add a repo.": "添加代码仓库。",
+    "Add files": "添加文件",
+    "Add agent": "添加智能体",
+    "Add an agent here.": "在这里添加智能体。",
+    "Add people": "添加成员",
+    "Invite members.": "邀请成员加入。"
+  },
+  "features/messages/ui/MessageThreadPanel.tsx": {
+    "Reply in thread to {{0}}": "在话题中回复 {{0}}"
+  },
+  "features/channels/ui/ChannelBrowserDialog.tsx": {
+    "Add a forum": "添加论坛",
+    "Browse channels": "浏览频道",
+    "Search or create a forum": "搜索或创建论坛",
+    "Search or create a channel": "搜索或创建频道",
+    "Search forums by name or description": "按名称或说明搜索论坛",
+    "Search channels by name or description": "按名称或说明搜索频道",
+    "All channels": "全部频道",
+    "All forums": "全部论坛"
+  }
+}

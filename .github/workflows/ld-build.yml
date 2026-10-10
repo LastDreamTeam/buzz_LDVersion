@@ -1,0 +1,82 @@
+name: LD Chinese Desktop
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ld-chinese-desktop
+  cancel-in-progress: false
+jobs:
+  windows:
+    if: github.repository == 'LastDreamTeam/buzz_LDVersion' && github.ref == 'refs/heads/main_1'
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      TARGET: x86_64-pc-windows-msvc
+      LD_BUZZ_LOCALE: zh-CN
+      VITE_BUZZ_BESTIE: '0'
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.14.1
+          package-manager-cache: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 11.4.0
+      - name: Install locked frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify display boundary, native source contracts and Chinese workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test desktop/ld/localize.test.mjs
+          pnpm --dir desktop typecheck
+          pnpm --dir desktop exec playwright install chromium --only-shell
+          pnpm --dir desktop build:e2e
+          pnpm --dir desktop exec playwright test --config ld/playwright.config.ts
+      - name: Build fixed sidecars with pinned Rust
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup target add "$TARGET"
+          cargo build --locked --release --target "$TARGET" -p buzz-acp -p buzz-agent -p buzz-dev-mcp -p git-credential-nostr -p buzz-cli
+          python ld/tests/cli-edit-stdin.py "target/$TARGET/release/buzz.exe"
+          ./scripts/bundle-sidecars.sh "$TARGET"
+      - name: Set identifiable LD preview version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="0.5.29-ld.${GITHUB_RUN_NUMBER}"
+          cd desktop
+          node scripts/set-version-from-tag.mjs "$VERSION"
+          cd src-tauri
+          cargo update --workspace
+      - name: Build unsigned NSIS without automatic updates
+        shell: bash
+        run: cd desktop && pnpm tauri build --target "$TARGET" --bundles nsis --config ld/tauri.ld.conf.json
+        env:
+          CMAKE_POLICY_VERSION_MINIMUM: '3.5'
+      - name: Create integrity receipt
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem "desktop/src-tauri/target/$env:TARGET/release/bundle/nsis/*.exe"
+          if ($files.Count -ne 1) { throw 'Expected one installer' }
+          $artifactDir = New-Item -ItemType Directory -Path ld-artifact
+          Copy-Item -LiteralPath $files[0].FullName -Destination $artifactDir
+          $env:GITHUB_SHA | Set-Content ld-artifact/SOURCE_COMMIT -Encoding utf8NoBOM
+          Get-FileHash -Algorithm SHA256 ld-artifact/*.exe | ForEach-Object { "$($_.Hash.ToLower())  $([IO.Path]::GetFileName($_.Path))" } | Set-Content ld-artifact/SHA256SUMS -Encoding utf8NoBOM
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: buzz-ld-windows-zh-CN-${{ github.sha }}
+          path: ld-artifact/
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: buzz-ld-ui-evidence-${{ github.sha }}
+          path: desktop/test-results/ld/
+          retention-days: 7
