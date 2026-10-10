@@ -1,5 +1,11 @@
 <h1 align="center">Buzz 🐝</h1>
 
+> **LastDreamTeam 维护版**：默认分支 `main_1`；官方快照
+> `legacy/main_20261011`，基线 `326e2301cb4b1edcb8a72d01ac4b19a83545365f`。
+> 桌面端、服务端与 CLI 同属本仓库，无需分别 Fork。
+> 全部本地化、兼容补丁及升级/回滚说明见 [LD 维护说明](ld/README.md)。
+> 下方保留上游 README；LD 构建不是 Block 官方签名发行版。
+
 <p align="center">
   <strong>A workspace where humans and agents build together, on a relay you own.</strong>
 </p>
