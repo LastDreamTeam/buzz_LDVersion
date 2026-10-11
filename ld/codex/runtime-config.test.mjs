@@ -1,6 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { codingEnvironment, codexConfig } from './runtime-config.mjs';
+import { codingEnvironment, codexConfig, harnessEnvironment } from './runtime-config.mjs';
+
+test('native harness uses the guarded initial model without redundant model RPCs', () => {
+  const input = { BUZZ_ACP_MODEL: 'wrong', BUZZ_ACP_EFFORT_LEVEL: 'low', BUZZ_PRIVATE_KEY: 'fake-key' };
+  const env = harnessEnvironment(input, 'guard.exe');
+  assert.equal(env.BUZZ_ACP_MODEL, undefined);
+  assert.equal(env.BUZZ_ACP_EFFORT_LEVEL, undefined);
+  assert.equal(env.BUZZ_ACP_AGENT_COMMAND, 'guard.exe');
+  assert.equal(env.BUZZ_PRIVATE_KEY, 'fake-key');
+  assert.equal(input.BUZZ_ACP_MODEL, 'wrong');
+  for (const model of ['gpt-6-astra[xhigh]', 'gpt-6-sol[high]', 'gpt-6-luna[medium]']) {
+    assert.equal(codexConfig(model, {}).model, model.split('[')[0]);
+  }
+});
 
 test('preserve native per-agent Buzz identity but not harness or provider credentials', () => {
   const env = codingEnvironment({ BUZZ_PRIVATE_KEY: 'fake-agent-key', BUZZ_RELAY_URL: 'https://relay.invalid',

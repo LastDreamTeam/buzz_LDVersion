@@ -1,0 +1,9 @@
+{
+  "services": {
+    "relay": {
+      "environment": {
+        "BUZZ_CORS_ORIGINS": "https://YOUR-RELAY-ORIGIN,http://tauri.localhost,https://tauri.localhost,tauri://localhost"
+      }
+    }
+  }
+}

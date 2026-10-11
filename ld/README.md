@@ -25,6 +25,8 @@
 | LD-010 | 补齐原生手机配对 sidecar | `ld/deploy/enable-pairing.py`，独立 Compose 服务及 Nginx `/pair` | 复用已部署官方镜像中的 `buzz-pair-relay`；无数据库/私钥/聊天持久化，不重启 Hermes 或主 Relay |
 | LD-011 | 已有外部 Hermes 身份的原生主人归属与权限声明 | 原生 NIP-OA kind 0 / 主人签名 kind 30177；不改产品源码 | 本机主人签名、远端 Agent 签名，严格读回；不复制主人私钥，不伪造本机托管记录或远程控制权限 |
 | LD-012 | 本机 Codex 的 E 盘工作区及限定权限自动审批 | 独立 `ld/codex/` shim + 原生 Buzz ACP / Codex 沙箱 | [部署、边界、测试、升级及卸载](codex/README.zh-CN.md)；不用 full access，不修改产品核心 |
+| LD-013 | 原身份独立后台运行、严格派单名单、规避多余模型 RPC 超时 | Windows 登录任务 + 原生 standalone `buzz-acp`；只改 `ld/codex/` | [原理、验收、重启后的使用步骤、新增 Agent 清单](codex/HEADLESS.zh-CN.md)；关闭 Buzz 后真实落盘回帖，保留 workspace-write |
+| LD-014 | 桌面创建邀请链接 CORS 失败 | 原生 `BUZZ_CORS_ORIGINS` Compose 环境配置，无产品源码补丁 | [配置、验收和回滚](deploy/DESKTOP-CORS.zh-CN.md)；NIP-98 与真实 WebView 均验收，鉴权不变 |
 
 ### 提交元数据勘误
 

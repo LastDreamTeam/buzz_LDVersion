@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { Policy } from './policy.mjs';
-import { codingEnvironment, codexConfig } from './runtime-config.mjs';
+import { codingEnvironment, codexConfig, harnessEnvironment } from './runtime-config.mjs';
 
 // OpenAI: this adapter is a removable LD integration, not an upstream Buzz security feature.
 const dir = path.dirname(fileURLToPath(import.meta.url));
@@ -18,7 +18,10 @@ let env = { ...process.env, TEMP: path.join(workspace, '.tmp'), TMP: path.join(w
 fs.mkdirSync(env.TEMP, { recursive: true });
 let child;
 if (process.argv[2] === 'harness') {
-  Object.assign(env, { BUZZ_ACP_AGENT_COMMAND: path.join(dir, 'buzz-ld-codex.exe'), BUZZ_ACP_AGENT_ARGS: '--guard', BUZZ_ACP_MCP_COMMAND: '', BUZZ_ACP_PERMISSION_MODE: 'default', BUZZ_ACP_MODEL: agent.model });
+  if (fs.existsSync(path.join(dir, 'headless-host.json')) && env.LD_BUZZ_HEADLESS !== '1') {
+    throw new Error('This identity is hosted independently on its execution computer; use Buzz messages, not Desktop Start.');
+  }
+  env = harnessEnvironment(env, path.join(dir, 'buzz-ld-codex.exe'));
   child = spawn(cfg.harness, [], { cwd: workspace, env, stdio: 'inherit', windowsHide: true });
 } else {
   env = codingEnvironment(env);

@@ -4,7 +4,8 @@
 > `legacy/main_20261011`，基线 `326e2301cb4b1edcb8a72d01ac4b19a83545365f`。
 > 桌面端、服务端与 CLI 同属本仓库，无需分别 Fork。
 > 全部本地化、兼容补丁及升级/回滚说明见 [LD 维护说明](ld/README.md)。
-> 本机 Codex 远程协作接入见 [E 盘适配器说明](ld/codex/README.zh-CN.md)，保留原生身份与消息协议。
+> 执行节点 Codex 远程协作见 [E 盘适配器说明](ld/codex/README.zh-CN.md)；
+> [独立运行与新增 Agent 避坑报告](ld/codex/HEADLESS.zh-CN.md)说明登录自启、异地派单及桌面关闭后的运行边界。
 > 下方保留上游 README；LD 构建不是 Block 官方签名发行版。
 
 <p align="center">

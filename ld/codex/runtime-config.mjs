@@ -1,6 +1,16 @@
 // OpenAI: native Buzz CLI needs this agent's identity, never the human owner's key.
 export const buzzCliEnvironment = ['BUZZ_PRIVATE_KEY', 'BUZZ_RELAY_URL', 'BUZZ_AUTH_TAG'];
 
+// OpenAI: the guard pins and verifies the model at session/new. A redundant native
+// set_model RPC can time out at 5s even when Codex already selected that model.
+export function harnessEnvironment(inherited, command) {
+  const env = { ...inherited, BUZZ_ACP_AGENT_COMMAND: command,
+    BUZZ_ACP_AGENT_ARGS: '--guard', BUZZ_ACP_MCP_COMMAND: '', BUZZ_ACP_PERMISSION_MODE: 'default' };
+  delete env.BUZZ_ACP_MODEL;
+  delete env.BUZZ_ACP_EFFORT_LEVEL;
+  return env;
+}
+
 export function codingEnvironment(inherited) {
   const env = { ...inherited };
   for (const key of Object.keys(env)) {

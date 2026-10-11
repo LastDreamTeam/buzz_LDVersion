@@ -1,3 +1,7 @@
 machine.json
 *.exe
 private/
+headless-host.json
+subscription-*.toml
+host-error-*.txt
+logs/

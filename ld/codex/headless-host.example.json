@@ -1,0 +1,17 @@
+{
+  "computerName": "YOUR-EXECUTION-PC",
+  "relayUrl": "wss://relay.example.invalid",
+  "managedAgentsPath": "C:\\Users\\YOUR_USER\\AppData\\Roaming\\xyz.block.buzz.app\\agents\\managed-agents.json",
+  "owner": "REPLACE_WITH_OWNER_64_HEX_PUBLIC_KEY",
+  "allowedAuthors": [
+    "REPLACE_WITH_OWNER_64_HEX_PUBLIC_KEY",
+    "REPLACE_WITH_FIRST_APPROVED_BOT_64_HEX_PUBLIC_KEY",
+    "REPLACE_WITH_SECOND_APPROVED_BOT_64_HEX_PUBLIC_KEY"
+  ],
+  "agents": {
+    "astra": { "pubkey": "REPLACE_WITH_EXISTING_ASTRA_64_HEX_PUBLIC_KEY" },
+    "sol": { "pubkey": "REPLACE_WITH_EXISTING_SOL_64_HEX_PUBLIC_KEY" },
+    "luna": { "pubkey": "REPLACE_WITH_EXISTING_LUNA_64_HEX_PUBLIC_KEY" }
+  },
+  "diagnostic": false
+}
