@@ -1,5 +1,7 @@
 # Buzz LD 维护说明
 
+> **【已停止魔改更新】** LastDreamTeam 已停止对本 Fork 的魔改与维护更新。原因：Bug 问题太多。本仓库将归档为只读（read-only）。下文保留历史维护账本与上游说明，不再代表持续维护。
+
 上游：[block/buzz](https://github.com/block/buzz)，Apache-2.0 许可证保持不变。
 
 ## 仓库边界
